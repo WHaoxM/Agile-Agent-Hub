@@ -2,7 +2,7 @@
 
 ## 1. 当前架构 (Current_Architecture)
 - **项目目标:** 将 QQ 群聊非结构化聊天记录提取为标准化待办任务的本地智能体流水线。
-- **技术栈:** Python 3.10+, pytest, pytest-cov, LLM (通过 SOLO 平台)。
+- **技术栈:** Python 3.10+, pytest, pytest-cov, OpenAI SDK, python-dotenv, DeepSeek LLM。
 - **目录结构:**
   - `src/` - 源代码目录
   - `tests/` - 测试代码目录
@@ -11,15 +11,20 @@
 - **输出格式:** JSON + Markdown 双输出
 - **核心数据模型:** [src/models.py](file:///workspace/src/models.py) - Task dataclass
 - **输出模块:** [src/output.py](file:///workspace/src/output.py) - tasks_to_json, tasks_to_markdown
-- **提取模块:** [src/extractor.py](file:///workspace/src/extractor.py) - TaskExtractor (支持 LLM 提取 + mock 提取)
-  - LLM 提取：使用 OpenAI 兼容 API 进行智能任务提取
+- **提取模块:** [src/extractor.py](file:///workspace/src/extractor.py) - TaskExtractor (支持上下文感知提取 + LLM 提取 + mock 提取)
+  - **上下文感知提取（优先）**: 能够理解长群聊上下文、识别指代关系、整合分散信息，使用专门的提示词模板
+  - LLM 提取：使用 OpenAI 兼容 API 进行智能任务提取（DeepSeek 已验证）
   - Mock 提取：简单模式匹配作为降级方案
-- **LLM 客户端:** [src/llm_client.py](file:///workspace/src/llm_client.py) - LLM API 调用封装
-- **配置模块:** [src/config.py](file:///workspace/src/config.py) - LLM 配置管理
+- **LLM 客户端:** [src/llm_client.py](file:///workspace/src/llm_client.py) - LLM API 调用封装（支持上下文感知提取）
+- **配置模块:** [src/config.py](file:///workspace/src/config.py) - LLM 配置管理（支持 .env 文件）
+- **提示词模块:** [src/prompt.py](file:///workspace/src/prompt.py) - LLM 提示词构建（包含上下文感知提示词）
+- **解析模块:** [src/parser.py](file:///workspace/src/parser.py) - LLM JSON 响应解析
 - **完整流水线:** [src/pipeline.py](file:///workspace/src/pipeline.py) - TaskPipeline
+- **环境配置:** [.env](file:///workspace/.env) - 本地环境变量配置（git 忽略）
+- **配置示例:** [.env.example](file:///workspace/.env.example) - 环境变量配置模板
 
 ## 2. 当前开发阶段 (Active_Task)
-- **Phase:** 04_LLM_Integration (LLM 集成完成！)
+- **Phase:** 05_Production_Ready (生产就绪！)
 - **MVP 规格文档:** [docs/MVP_SPEC.md](file:///workspace/docs/MVP_SPEC.md)
 - **当前冲刺任务:**
   - [x] 定义任务数据模型（Task dataclass）
@@ -27,8 +32,16 @@
   - [x] 实现 LLM 任务提取功能（mock 版本）
   - [x] 实现完整流水线 (TaskPipeline)
   - [x] 实现真实 LLM API 集成（OpenAI 兼容接口）
-  - [x] 添加环境变量配置支持
+  - [x] 添加环境变量配置支持（.env 文件）
   - [x] 实现 LLM 提取失败降级机制
+  - [x] 实现 LLM 提示词构建模块
+  - [x] 实现 LLM JSON 响应解析模块
+  - [x] 集成 DeepSeek LLM 并验证功能
+  - [x] 添加 python-dotenv 依赖支持 .env 文件
+  - [x] 创建测试脚本验证自定义输入
+  - [x] 实现上下文感知任务提取功能
+  - [x] 实现长群聊文本输入支持
+  - [x] 创建 test_long_chat.py 测试长群聊处理
 
 ## 3. 已完成特性 (Completed_Features)
 - **基础设施搭建:** 完成项目目录结构，配置 pytest 测试框架
@@ -38,14 +51,29 @@
 - **数据模型定义:** 完成 Task dataclass，4个测试用例全部通过
 - **双输出模块:** 完成 tasks_to_json 和 tasks_to_markdown，5个测试用例全部通过
 - **LLM 提取模块:** 完成 TaskExtractor 接口与 mock 实现，10个测试用例通过
-- **完整流水线:** 完成 TaskPipeline，7个测试用例通过，总计28个测试用例全部通过！
-- **LLM 集成:** 
-  - 实现 OpenAI 兼容 API 客户端（src/llm_client.py）
-  - 实现环境变量配置管理（src/config.py）
+- **完整流水线:** 完成 TaskPipeline，7个测试用例通过
+- **LLM 集成 (完整功能):** 
+  - 实现 OpenAI 兼容 API 客户端（[src/llm_client.py](file:///workspace/src/llm_client.py)）
+  - 实现环境变量配置管理（[src/config.py](file:///workspace/src/config.py)）
   - 支持自定义 API 地址、模型和超时时间
+  - 实现 LLM 提示词构建模块（[src/prompt.py](file:///workspace/src/prompt.py)）
+  - 实现 LLM JSON 响应解析模块（[src/parser.py](file:///workspace/src/parser.py)）
   - 实现 LLM 提取失败自动降级到 mock 提取
   - 添加 .env.example 配置示例文件
   - 更新 example.py 包含详细的使用说明
+  - 添加 python-dotenv 依赖支持 .env 文件加载
+  - 集成 DeepSeek LLM 并验证功能正常
+  - 创建 test_custom.py 测试脚本验证自定义输入
+- **上下文感知任务提取:**
+  - 实现上下文感知任务提取功能（[src/extractor.py](file:///workspace/src/extractor.py)）
+  - 支持长群聊文本输入（最大 10000 字符）
+  - 能够理解对话上下文、识别指代关系
+  - 智能补全省略的主语、宾语和时间信息
+  - 整合分散在对话中的任务信息
+  - 构建专门的上下文感知提示词（[src/prompt.py](file:///workspace/src/prompt.py)）
+  - 上下文感知提取作为优先提取策略
+  - 创建 test_long_chat.py 测试脚本验证长群聊处理
+- **完整测试套件:** 总计 74 个测试用例全部通过！
 
 ## 4. 废弃区与上下文垃圾桶 (Deprecated_Info)
 - None

@@ -1,9 +1,9 @@
 from typing import List
 from src.models import Task
 from src.config import get_llm_config
-from src.prompt import build_task_extraction_prompt
+from src.prompt import build_task_extraction_prompt, build_context_aware_prompt
 from src.parser import parse_llm_response, TaskParseError
-from src.llm_client import call_llm_for_task_extraction, LLMClientError
+from src.llm_client import call_llm_for_task_extraction, call_llm_for_context_aware_extraction, LLMClientError
 from datetime import datetime
 import logging
 
@@ -26,12 +26,29 @@ class TaskExtractor:
         if len(chat_text) > MAX_TEXT_LENGTH:
             raise ValueError(f"chat_text too long (max {MAX_TEXT_LENGTH} characters)")
 
+        tasks = self._context_aware_extract(chat_text)
+        if tasks is not None:
+            return tasks
+        
+        logger.warning("Context-aware extraction failed, falling back to LLM extraction")
         tasks = self._llm_extract(chat_text)
         if tasks is not None:
             return tasks
         
         logger.warning("LLM extraction failed, falling back to mock extraction")
         return self._mock_extract(chat_text)
+
+    def _context_aware_extract(self, chat_text: str) -> List[Task] | None:
+        try:
+            config = get_llm_config()
+        except ValueError:
+            return None
+        
+        try:
+            response = call_llm_for_context_aware_extraction(chat_text, config)
+            return parse_llm_response(response)
+        except (LLMClientError, TaskParseError):
+            return None
 
     def _llm_extract(self, chat_text: str) -> List[Task] | None:
         try:
