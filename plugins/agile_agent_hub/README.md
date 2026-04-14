@@ -10,8 +10,8 @@
 - ⏰ **定时任务** - 使用 NcatBot 的定时任务服务，每日自动触发总结
 - 📊 **群聊总结** - 调用 LLM 生成完整的群聊总结
 - 🎯 **任务提取** - 基于上下文感知的任务提取，识别任务和分工
-- �️ **图片总结** - 生成精美的 HTML 图片发送到群里（支持多种主题）
-- � **结果存储** - 将总结和任务保存到本地 JSON 文件
+- 🖼️ **图片总结** - 生成精美的 HTML 图片发送到群里（支持多种主题）
+- 💾 **结果存储** - 将总结和任务保存到本地 JSON 文件
 - 📢 **指定发送** - 可将总结发送到指定群（汇总多个群的消息到一个群）
 
 ## 安装与配置
@@ -47,7 +47,6 @@ monitored_groups: []
 # 只监听指定用户的 QQ 号（空数组表示监听所有人）
 # 示例: ["2319766011", "123456789"]
 monitored_users: []
-
 # LLM API 配置
 llm_api_base: "https://api.openai.com/v1"
 llm_api_key: "your-api-key-here"  # 必须填写你的 API Key
@@ -60,6 +59,7 @@ send_to_group: false
 summary_output_dir: "summaries"
 ```
 
+<<<<<<< HEAD
 ### 配置说明
 
 | 配置项 | 说明 | 示例 |
@@ -75,7 +75,6 @@ summary_output_dir: "summaries"
 | `dynamic_summary_min_messages` | 触发总结的最小消息数 | `5` |
 | `summary_as_image` | 以图片形式发送总结 | `true` |
 | `summary_image_theme` | 图片主题 (default/dark/colorful) | `"colorful"` |
-
 ### 3. 启动 NcatBot
 
 ```bash
@@ -200,7 +199,6 @@ summary_as_image: false
 - 整体圆角卡片设计，美观易读
 
 **获取群号和QQ号方法**: 启动插件后，在群里发消息，看终端日志输出：`收到群消息 - 群组: {群号}, 发送者: {昵称} ({QQ号})`
-
 ### 总结文件格式
 
 生成的总结文件为 JSON 格式，包含以下字段：

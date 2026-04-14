@@ -165,6 +165,7 @@ class AgileAgentHub(NcatBotPlugin):
         
         if not hasattr(self, 'data'):
             self.data = {"messages": {}}
+<<<<<<< HEAD
         
         # 动态总结状态跟踪
         self._last_message_time: Dict[str, float] = {}
@@ -293,6 +294,7 @@ class AgileAgentHub(NcatBotPlugin):
             "sender_id": sender_id,
             "sender_name": sender_name,
             "content": content,
+<<<<<<< HEAD
             "timestamp": timestamp,
             "source": "group"
         })
@@ -647,6 +649,10 @@ class AgileAgentHub(NcatBotPlugin):
         except Exception as e:
             self.logger.warning(f"🎭 压缩对话历史失败: {e}")
             return "(历史对话较长，已省略早期记录)"
+=======
+            "timestamp": timestamp
+        })
+>>>>>>> a9dd56a (feat: add NcatBot integration with defensive code generator)
 
     def format_group_messages(self, messages: List[dict]) -> str:
         """格式化群聊消息为文本（使用防御性工具函数）。
@@ -684,6 +690,7 @@ class AgileAgentHub(NcatBotPlugin):
                 model=model
             )
             
+<<<<<<< HEAD
             # 去除 markdown 代码块标记（如果存在）
             import re
             cleaned_response = raw_response
@@ -695,6 +702,9 @@ class AgileAgentHub(NcatBotPlugin):
                     cleaned_response = match.group(1).strip()
             
             result_data = safe_json_loads(cleaned_response, {})
+=======
+            result_data = safe_json_loads(raw_response, {})
+>>>>>>> a9dd56a (feat: add NcatBot integration with defensive code generator)
             summary = result_data.get("summary", "")
             tasks_data = result_data.get("tasks", [])
             
@@ -735,7 +745,11 @@ class AgileAgentHub(NcatBotPlugin):
         output_dir = self.config.get("summary_output_dir", "summaries")
         
         if not os.path.isabs(output_dir):
+<<<<<<< HEAD
             output_dir = os.path.join(str(self.workspace), output_dir)
+=======
+            output_dir = os.path.join(self.workspace, output_dir)
+>>>>>>> a9dd56a (feat: add NcatBot integration with defensive code generator)
         
         safe_make_dirs(output_dir)
         
@@ -805,6 +819,7 @@ class AgileAgentHub(NcatBotPlugin):
                         self.logger.error(f"群组 {group_id} 保存结果失败: {e}", exc_info=True)
                         continue
                     
+<<<<<<< HEAD
                     # 发送总结（支持图片）
                     await self._send_summary_to_groups(
                         group_id=group_id,
@@ -815,6 +830,20 @@ class AgileAgentHub(NcatBotPlugin):
                         is_dynamic=False,
                         messages=messages
                     )
+=======
+                    send_to_group = self.config.get("send_to_group", False)
+                    if send_to_group:
+                        try:
+                            task_list_text = "\n".join([
+                                f"• {task.task}" + (f" (负责人: {task.assignee})" if task.assignee else "") + (f" (截止: {task.deadline})" if task.deadline else "")
+                                for task in tasks
+                            ])
+                            summary_msg = f"📊 {yesterday} 群组总结\n\n{summary}\n\n📋 提取到的任务:\n{task_list_text}"
+                            await self.api.qq.post_group_msg(group_id, text=summary_msg)
+                            self.logger.info(f"已将总结发送到群组 {group_id}")
+                        except Exception as e:
+                            self.logger.error(f"发送消息到群组 {group_id} 失败: {e}", exc_info=True)
+>>>>>>> a9dd56a (feat: add NcatBot integration with defensive code generator)
                 
                 except Exception as e:
                     self.logger.error(f"处理群组 {group_id} 时发生错误: {e}", exc_info=True)
@@ -825,6 +854,7 @@ class AgileAgentHub(NcatBotPlugin):
         except Exception as e:
             self.logger.error(f"每日总结任务执行失败: {e}", exc_info=True)
     
+<<<<<<< HEAD
     async def _dynamic_summary_loop(self):
         """后台协程：定期检查各群空闲时间，空闲超过设定值则触发总结。"""
         idle_seconds = self.config.get("dynamic_summary_idle_minutes", 10) * 60
@@ -1245,3 +1275,7 @@ class AgileAgentHub(NcatBotPlugin):
             
         except Exception as e:
             self.logger.error(f"🎭 处理回复失败: {e}")
+=======
+    async def on_close(self):
+        self.logger.info(f"{self.name} 已卸载")
+>>>>>>> a9dd56a (feat: add NcatBot integration with defensive code generator)

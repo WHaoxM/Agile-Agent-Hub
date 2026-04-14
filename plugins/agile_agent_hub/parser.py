@@ -30,7 +30,6 @@ def parse_llm_response(response: str) -> List[Task]:
     
     # 去除 markdown 代码块标记
     response = _extract_json_from_markdown(response)
-    
     try:
         data = json.loads(response)
     except json.JSONDecodeError as e:

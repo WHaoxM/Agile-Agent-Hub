@@ -1,31 +1,43 @@
 # [项目 SSOT] Agile-Agent Hub
 
 ## 1. 当前架构 (Current_Architecture)
-- **项目目标:** 将 QQ 群聊非结构化聊天记录提取为标准化待办任务的本地智能体流水线。
-- **技术栈:** Python 3.10+, pytest, pytest-cov, OpenAI SDK, python-dotenv, DeepSeek LLM。
+- **项目目标:** 将 QQ 群聊非结构化聊天记录提取为标准化待办任务的本地智能体流水线，已集成 NcatBot 实现自动化群聊总结。
+- **技术栈:** Python 3.10+, pytest, pytest-cov, OpenAI SDK, python-dotenv, DeepSeek LLM, NcatBot。
 - **目录结构:**
-  - `src/` - 源代码目录
-  - `tests/` - 测试代码目录
+  - `src/` - 源代码目录（原始独立版本）
+  - `tests/` - 测试代码目录（原始独立版本）
   - `docs/` - 文档目录
+  - `NcatBot/` - NcatBot 框架仓库
+  - `plugins/agile_agent_hub/` - NcatBot 插件目录（生产版本）
 - **依赖管理:** pyproject.toml
 - **输出格式:** JSON + Markdown 双输出
-- **核心数据模型:** [src/models.py](file:///workspace/src/models.py) - Task dataclass
+- **核心数据模型:** [src/models.py](file:///workspace/src/models.py) - Task dataclass, [plugins/agile_agent_hub/models.py](file:///workspace/plugins/agile_agent_hub/models.py)
 - **输出模块:** [src/output.py](file:///workspace/src/output.py) - tasks_to_json, tasks_to_markdown
 - **提取模块:** [src/extractor.py](file:///workspace/src/extractor.py) - TaskExtractor (支持上下文感知提取 + LLM 提取 + mock 提取)
   - **上下文感知提取（优先）**: 能够理解长群聊上下文、识别指代关系、整合分散信息，使用专门的提示词模板
   - LLM 提取：使用 OpenAI 兼容 API 进行智能任务提取（DeepSeek 已验证）
   - Mock 提取：简单模式匹配作为降级方案
-- **LLM 客户端:** [src/llm_client.py](file:///workspace/src/llm_client.py) - LLM API 调用封装（支持上下文感知提取）
+- **LLM 客户端:** [src/llm_client.py](file:///workspace/src/llm_client.py), [plugins/agile_agent_hub/llm_client.py](file:///workspace/plugins/agile_agent_hub/llm_client.py) - LLM API 调用封装
 - **配置模块:** [src/config.py](file:///workspace/src/config.py) - LLM 配置管理（支持 .env 文件）
-- **提示词模块:** [src/prompt.py](file:///workspace/src/prompt.py) - LLM 提示词构建（包含上下文感知提示词）
-- **解析模块:** [src/parser.py](file:///workspace/src/parser.py) - LLM JSON 响应解析
+- **提示词模块:** [src/prompt.py](file:///workspace/src/prompt.py), [plugins/agile_agent_hub/prompt.py](file:///workspace/plugins/agile_agent_hub/prompt.py) - LLM 提示词构建（包含群聊总结提示词）
+- **解析模块:** [src/parser.py](file:///workspace/src/parser.py), [plugins/agile_agent_hub/parser.py](file:///workspace/plugins/agile_agent_hub/parser.py) - LLM JSON 响应解析
 - **完整流水线:** [src/pipeline.py](file:///workspace/src/pipeline.py) - TaskPipeline
+- **NcatBot 插件:** [plugins/agile_agent_hub/plugin.py](file:///workspace/plugins/agile_agent_hub/plugin.py) - 完整自动化插件
+  - 每日定时总结群聊消息
+  - 可配置的时间和监控群组
+  - 结果存储到本地文件
+  - 支持发送总结到群聊
+- **防御性工具模块:** [plugins/agile_agent_hub/defensive_utils.py](file:///workspace/plugins/agile_agent_hub/defensive_utils.py) - 类型安全的防御性工具函数
 - **环境配置:** [.env](file:///workspace/.env) - 本地环境变量配置（git 忽略）
 - **配置示例:** [.env.example](file:///workspace/.env.example) - 环境变量配置模板
+- **插件配置:** [plugins/agile_agent_hub/config.yaml](file:///workspace/plugins/agile_agent_hub/config.yaml) - NcatBot 插件默认配置
+- **插件元数据:** [plugins/agile_agent_hub/manifest.toml](file:///workspace/plugins/agile_agent_hub/manifest.toml) - NcatBot 插件清单
 
 ## 2. 当前开发阶段 (Active_Task)
-- **Phase:** 05_Production_Ready (生产就绪！)
+- **Phase:** 06_NcatBot_Integration_Complete (NcatBot 集成完成！)
 - **MVP 规格文档:** [docs/MVP_SPEC.md](file:///workspace/docs/MVP_SPEC.md)
+- **上下文感知提取规格:** [.trae/specs/context-aware-extractor/spec.md](file:///workspace/.trae/specs/context-aware-extractor/spec.md)
+- **NcatBot 集成规格:** [.trae/specs/ncatbot-integration/spec.md](file:///workspace/.trae/specs/ncatbot-integration/spec.md)
 - **当前冲刺任务:**
   - [x] 定义任务数据模型（Task dataclass）
   - [x] 实现 JSON + Markdown 双输出模块
@@ -42,6 +54,13 @@
   - [x] 实现上下文感知任务提取功能
   - [x] 实现长群聊文本输入支持
   - [x] 创建 test_long_chat.py 测试长群聊处理
+  - [x] 克隆 NcatBot 仓库
+  - [x] 创建 NcatBot 插件目录结构
+  - [x] 实现插件核心功能（群消息收集、定时任务、LLM 集成）
+  - [x] 实现群聊总结功能（不仅是任务提取）
+  - [x] 创建防御性工具模块（防止边界测试攻击）
+  - [x] 集成防御性工具到插件主代码
+  - [x] 完成所有本地测试
 
 ## 3. 已完成特性 (Completed_Features)
 - **基础设施搭建:** 完成项目目录结构，配置 pytest 测试框架
@@ -73,7 +92,29 @@
   - 构建专门的上下文感知提示词（[src/prompt.py](file:///workspace/src/prompt.py)）
   - 上下文感知提取作为优先提取策略
   - 创建 test_long_chat.py 测试脚本验证长群聊处理
-- **完整测试套件:** 总计 74 个测试用例全部通过！
+- **NcatBot 插件集成:**
+  - 克隆 NcatBot 仓库（[NcatBot/](file:///workspace/NcatBot/)）
+  - 创建完整的插件目录结构（[plugins/agile_agent_hub/](file:///workspace/plugins/agile_agent_hub/)）
+  - 实现插件主类（[plugins/agile_agent_hub/plugin.py](file:///workspace/plugins/agile_agent_hub/plugin.py)）
+  - 实现群聊消息收集和存储功能
+  - 实现每日定时任务调度
+  - 实现群聊总结生成（不仅是任务提取）
+  - 实现本地文件存储（JSON 格式）
+  - 支持配置发送总结到群聊
+  - 完整的配置验证和错误处理
+- **防御性代码生成:**
+  - 创建防御性工具模块（[plugins/agile_agent_hub/defensive_utils.py](file:///workspace/plugins/agile_agent_hub/defensive_utils.py)）
+  - 实现类型安全的消息格式化函数
+  - 实现安全的 JSON 解析和序列化
+  - 实现防止路径遍历的文件操作
+  - 实现全面的配置验证
+  - 集成防御性工具到插件主代码
+  - 完整的防御性工具测试套件
+  - 完整的集成测试套件
+- **完整测试套件:** 
+  - 原始版本：总计 74 个测试用例全部通过！
+  - 防御性工具：所有测试用例全部通过！
+  - 集成测试：所有测试用例全部通过！
 
 ## 4. 废弃区与上下文垃圾桶 (Deprecated_Info)
 - None
