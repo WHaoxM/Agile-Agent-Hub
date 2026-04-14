@@ -1,0 +1,61 @@
+# Agile Agent Hub 配置文件
+# 智能群聊总结与任务提取插件
+
+# 定时任务时间（HH:MM 格式）
+# 每天这个时间生成前一天的群聊总结和任务清单
+schedule_time: "07:00"
+
+# 监听的群组 ID 列表（字符串数组）
+# 为空数组 [] 表示监听所有群
+# 示例: ["1005031932", "123456789"]
+monitored_groups: ["2168061868", "679595994"]
+
+# 只监听指定用户的 QQ 号（字符串数组）- 群聊过滤
+# 为空数组 [] 表示监听群里所有人
+# 示例: ["2319766011", "123456789"]
+monitored_users: []
+
+# 监听私聊消息的用户 QQ 号（字符串数组）
+# 为空数组 [] 表示不监听私聊
+# 示例: ["2319766011"]
+monitored_private_users: []
+
+# AI 分身自动回复功能
+# 启用后，私聊消息会自动以你的风格回复
+avatar_enabled: true
+# 回复模式: "all" = 回复所有人, "target" = 只回复指定对象
+avatar_reply_mode: "all"
+# 当 mode 为 "target" 时，只回复这些 QQ 号（mode=all 时无效）
+avatar_target_users: []
+# 分身系统提示词（定义你的语气、风格、常用语）
+avatar_prompt: "你是 NeuTronM（钟梓珉），一名计算机专业学生。你的语气直接、务实，喜欢用简洁的语言。标点符号很随意：少用句号，多用换行或空格断句；用表情包代替标点；句子短促自然，像随手打字。常用调侃，但对正事认真负责。回复不超过3句话，每句话后加空格或表情包。"
+
+# LLM API 配置
+llm_api_base: "https://api.deepseek.com/v1"
+llm_api_key: "sk-4cc0bf504fea444d99ea8e0f8d02ea2e"
+llm_model: "deepseek-chat"
+
+# 是否将总结发送到群内
+send_to_group: true
+
+# 总结发送到指定群（字符串数组）
+# 为空数组 [] 表示发送到原群组（数据来源群）
+# 示例: ["1005031932"] - 将所有总结发送到这个群
+summary_target_groups: ["2168061868"]
+
+# 动态空闲总结（会话结束后自动总结）
+# 启用后，当群聊空闲超过设定时间且消息数达到阈值，自动总结发送
+dynamic_summary_enabled: true
+dynamic_summary_idle_minutes: 1
+dynamic_summary_min_messages: 2
+
+# 总结发送格式（需要安装 playwright: pip install playwright && playwright install chromium）
+# true = 生成美观的图片发送到群里
+# false = 发送纯文本
+summary_as_image: true
+
+# 图片主题风格 (default, dark, colorful)
+summary_image_theme: "colorful"
+
+# 总结文件保存目录
+summary_output_dir: "summaries"

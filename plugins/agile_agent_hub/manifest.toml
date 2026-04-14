@@ -1,0 +1,9 @@
+name = "agile_agent_hub"
+version = "0.1.0"
+main = "plugin.py"
+author = "NcatBot Team"
+description = "Agile Agent Hub - 智能代理中心插件"
+entry_class = "AgileAgentHub"
+pip_dependencies = []
+
+[dependencies]
